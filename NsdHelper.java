@@ -10,15 +10,13 @@ import java.net.InetAddress;
 
 /**
  * Network Service Registry and Discovery
- * <p>
- * Constructor: arguments -> Context, ServiceName
- * </p>
+ * Constructor: arguments -> Context
  *
  */
 class NsdHelper {
 
     private static final String TAG = "NsdHelper";
-    private String SERVICE_NAME = "NsdService";
+    private static final String SERVICE_NAME = "NsdService";
     private static final String SERVICE_TYPE = "_http._tcp.";
 
 
@@ -33,11 +31,9 @@ class NsdHelper {
     private MyResolveListener myResolveListener;
     private String mServiceName;
 
-    NsdHelper(Context context, String serviceName) {
-        SERVICE_NAME = serviceName;
+    NsdHelper(Context context) {
         mContext = context;
         mNsdManager = (NsdManager) mContext.getSystemService(Context.NSD_SERVICE);
-
     }
 
     void registerService(int port) {
@@ -58,6 +54,7 @@ class NsdHelper {
         initRegistrationListener();
         initDiscoveryListener();
         initResolveListener();
+
     }
 
     private void initResolveListener() {
@@ -118,11 +115,11 @@ class NsdHelper {
 
         @Override
         public void onServiceRegistered(NsdServiceInfo nsdServiceInfo) {
-            Log.i(TAG, "Registration Success");
             mServiceInfo = nsdServiceInfo;
             mServiceName = nsdServiceInfo.getServiceName();
             registered = true;
-            Toast.makeText(mContext, "Registered : " + nsdServiceInfo.getServiceName(), Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Registration Success");
+            // Toast.makeText(mContext, "Registered : " + nsdServiceInfo.getServiceName(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -135,27 +132,30 @@ class NsdHelper {
     private class MyDiscoveryListener implements NsdManager.DiscoveryListener {
         @Override
         public void onStartDiscoveryFailed(String s, int i) {
+        	Log.i(TAG, "Start Discovery Failed");
         }
 
         @Override
         public void onStopDiscoveryFailed(String s, int i) {
-
+			Log.i(TAG, "Stop Discovery Failed");
         }
 
         @Override
         public void onDiscoveryStarted(String s) {
-            Toast.makeText(mContext, "Discovery Started", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(mContext, "Discovery Started", Toast.LENGTH_SHORT).show();
+        	Log.i(TAG, "Discovery Started");
         }
 
         @Override
         public void onDiscoveryStopped(String s) {
-            Toast.makeText(mContext, "Discovery Stopped", Toast.LENGTH_SHORT).show();
+        	Log.i(TAG, "Discovery Stopped");
+            // Toast.makeText(mContext, "Discovery Stopped", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onServiceFound(NsdServiceInfo nsdServiceInfo) {
             Log.i(TAG, "Service Discovered " + nsdServiceInfo.getServiceName());
-            Toast.makeText(mContext, "Discovery Found " + nsdServiceInfo.getServiceName(), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(mContext, "Discovery Found " + nsdServiceInfo.getServiceName(), Toast.LENGTH_SHORT).show();
 
             if (!nsdServiceInfo.getServiceType().equals(SERVICE_TYPE)) {
                 // Service type is the string containing the protocol and
@@ -175,7 +175,7 @@ class NsdHelper {
 
         @Override
         public void onServiceLost(NsdServiceInfo nsdServiceInfo) {
-
+        	Log.i(TAG, "Service Lost");
         }
     }
 
@@ -191,10 +191,10 @@ class NsdHelper {
             mServiceInfo = nsdServiceInfo;
             if (nsdServiceInfo.getServiceName().equals(mServiceName)) {
                 Log.d(TAG, "Same IP.");
-                Toast.makeText(mContext, "LocalHost : " + nsdServiceInfo.getPort(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(mContext, "LocalHost : " + nsdServiceInfo.getPort(), Toast.LENGTH_SHORT).show();
                 return;
             }
-            Toast.makeText(mContext, "Service Resolved : " + nsdServiceInfo.getHost() + " : " + nsdServiceInfo.getPort(), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(mContext, "Service Resolved : " + nsdServiceInfo.getHost() + " : " + nsdServiceInfo.getPort(), Toast.LENGTH_SHORT).show();
             mServiceInfo = nsdServiceInfo;
             int port = mServiceInfo.getPort();
             InetAddress host = mServiceInfo.getHost();
